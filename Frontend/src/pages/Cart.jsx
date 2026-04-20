@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { CartContext } from "../utils/CartContext";
 import { Link } from "react-router-dom";
-import { WishlistContext } from "../utils/wishlistContext";
+import { WishlistContext } from "../utils/WishlistContext";
 
 const Cart = () => {
   const { cart, removeFromCart, increaseQuantity, decreaseQuantity } =

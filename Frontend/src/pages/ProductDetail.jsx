@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useState } from "react";
 import { useContext } from "react";
-import { WishlistContext } from "../utils/wishlistContext";
+import { WishlistContext } from "../utils/WishlistContext";
 import { CartContext } from "../utils/CartContext";
 import useFetch from "../utils/useFetch";
 
