@@ -19,7 +19,7 @@ const ProductListing = () => {
 
   const { category } = useParams();
   const { data, loading, error } = useFetch(
-    `http://localhost:3000/products/${category}`,
+    `https://backend-products-ecru.vercel.app/products/${category}`,
   );
 
   if (loading) {
