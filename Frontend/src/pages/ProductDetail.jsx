@@ -15,9 +15,7 @@ function ProductDetail() {
     data: product,
     loading,
     error,
-  } = useFetch(
-    `https://backend-products-ecru.vercel.app/products/${productId}`,
-  );
+  } = useFetch(`https://backend-products-ecru.vercel.app/product/${productId}`);
 
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
