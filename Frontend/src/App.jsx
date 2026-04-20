@@ -4,7 +4,7 @@ import "bootstrap/dist/js/bootstrap.bundle.min";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { WishlistProvider } from "./utils/wishlistContext";
+import { WishlistProvider } from "./utils/WishlistContext";
 import { CartProvider } from "./utils/CartContext";
 import { AddressProvider } from "./utils/AddressContext";
 import { OrderProvider } from "./utils/OrderContext";
