@@ -1,25 +1,32 @@
-import { useState, useContext } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useState, useContext } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import useFetch from "../utils/useFetch.jsx";
 import { WishlistContext } from "../utils/WishlistContext.jsx";
 import { CartContext } from "../utils/CartContext.jsx";
-import { useSearchParams } from "react-router-dom";
 
 const ProductListing = () => {
+  const { category } = useParams();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
+
+  // 🔥 NEW: category filter state (default from URL)
+  const [selectedCategories, setSelectedCategories] = useState(
+    category ? [category] : [],
+  );
+
+  useEffect(() => {
+    setSelectedCategories(category ? [category] : []);
+  }, [category]);
 
   const [rating, setRating] = useState(0);
   const [sortOrder, setSortOrder] = useState("");
 
-  const { wishlist, addToWishlist } = useContext(WishlistContext);
+  const { addToWishlist } = useContext(WishlistContext);
+  const { addToCart } = useContext(CartContext);
 
-  const { cart, addToCart, increaseQuantity, decreaseQuantity } =
-    useContext(CartContext);
-
-  const { category } = useParams();
+  // 🔥 IMPORTANT: fetch ALL products
   const { data, loading, error } = useFetch(
-    `https://backend-products-ecru.vercel.app/products/${category}`,
+    "https://backend-products-ecru.vercel.app/products",
   );
 
   if (loading) {
@@ -38,20 +45,28 @@ const ProductListing = () => {
 
   let filteredProducts = [...data];
 
+  // 🔍 Search filter
   if (searchQuery) {
     filteredProducts = filteredProducts.filter((product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }
 
-  // Filter by rating
+  // ⭐ Rating filter
   if (rating > 0) {
     filteredProducts = filteredProducts.filter(
       (product) => product.rating >= rating,
     );
   }
 
-  // Sort by price
+  // 🏷️ Category filter (MULTI SELECT)
+  if (selectedCategories.length > 0) {
+    filteredProducts = filteredProducts.filter((product) =>
+      selectedCategories.includes(product.category),
+    );
+  }
+
+  // 💰 Sorting
   if (sortOrder === "lowToHigh") {
     filteredProducts.sort((a, b) => a.price - b.price);
   }
@@ -60,6 +75,7 @@ const ProductListing = () => {
     filteredProducts.sort((a, b) => b.price - a.price);
   }
 
+  // ❌ No results
   if (filteredProducts.length === 0) {
     return (
       <div className="container my-5 text-center">
@@ -67,22 +83,24 @@ const ProductListing = () => {
           No products were found
           {searchQuery && ` for "${searchQuery}"`}
         </h4>
-        <h5>Try different keywords</h5>
+        <h5>Try different filters</h5>
       </div>
     );
   }
 
-  // filter by category from the URL
-  // const filteredProducts = data.filter(
-  //   (product) => product.category === category,
-  // );
+  // 🔁 Toggle category
+  const handleCategoryChange = (cat) => {
+    setSelectedCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat],
+    );
+  };
 
   return (
     <div className="container my-4">
-      <h2 className="mb-4 text-capitalize">{category} Shoes</h2>
+      <h2 className="mb-4">Products</h2>
 
       <div className="row">
-        {/* LEFT SIDE - PRODUCTS */}
+        {/* LEFT - PRODUCTS */}
         <div className="col-md-9">
           <div className="row">
             {filteredProducts.map((product) => (
@@ -102,10 +120,11 @@ const ProductListing = () => {
                       to={`/product/${product._id}`}
                       className="text-decoration-none text-dark"
                     >
-                      <h5 className="card-title">{product.name}</h5>
+                      <h5>{product.name}</h5>
                     </Link>
-                    <p className="card-text">₹{product.price}</p>
-                    <p className="card-text">⭐ {product.rating}</p>
+
+                    <p>₹{product.price}</p>
+                    <p>⭐ {product.rating}</p>
 
                     <Link to={`/product/${product._id}`}>
                       <button className="btn btn-primary me-2">
@@ -126,7 +145,7 @@ const ProductListing = () => {
           </div>
         </div>
 
-        {/* RIGHT SIDE - FILTERS */}
+        {/* RIGHT - FILTERS */}
         <div className="col-md-3">
           <div
             className="card p-3"
@@ -134,7 +153,23 @@ const ProductListing = () => {
           >
             <h5>Filters</h5>
 
-            {/* Rating Filter */}
+            {/* 🏷️ Category Filter */}
+            <div className="mt-3">
+              <h6>Category</h6>
+
+              {["men", "women", "kids"].map((cat) => (
+                <div key={cat}>
+                  <input
+                    type="checkbox"
+                    checked={selectedCategories.includes(cat)}
+                    onChange={() => handleCategoryChange(cat)}
+                  />
+                  <label className="ms-2 text-capitalize">{cat}</label>
+                </div>
+              ))}
+            </div>
+
+            {/* ⭐ Rating */}
             <div className="mt-3">
               <h6>Rating</h6>
               <input
@@ -146,10 +181,10 @@ const ProductListing = () => {
                 value={rating}
                 onChange={(e) => setRating(Number(e.target.value))}
               />
-              <p>Rating: {rating} and above</p>
+              <p>{rating} and above</p>
             </div>
 
-            {/* Sort */}
+            {/* 💰 Sort */}
             <div className="mt-3">
               <h6>Sort by Price</h6>
 
@@ -172,12 +207,13 @@ const ProductListing = () => {
               </div>
             </div>
 
-            {/* Clear Filters */}
+            {/* 🧹 Clear */}
             <button
               className="btn btn-secondary w-100 mt-3"
               onClick={() => {
                 setRating(0);
                 setSortOrder("");
+                setSelectedCategories(category ? [category] : []);
               }}
             >
               Clear Filters

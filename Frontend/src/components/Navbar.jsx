@@ -30,7 +30,7 @@ export default function Navbar() {
         <div className="collapse navbar-collapse" id="navbarNavAltMarkup">
           {/* LEFT SIDE NAV */}
           <div className="navbar-nav me-auto">
-            <Link className="nav-link" to="/products/men">
+            {/* <Link className="nav-link" to="/products/men">
               Men
             </Link>
             <Link className="nav-link" to="/products/women">
@@ -38,7 +38,7 @@ export default function Navbar() {
             </Link>
             <Link className="nav-link" to="/products/kids">
               Kids
-            </Link>
+            </Link> */}
             <Link className="nav-link" to="/wishlist">
               Wishlist
             </Link>
