@@ -1,11 +1,9 @@
 import { useContext } from "react";
 import { WishlistContext } from "../utils/WishlistContext";
 import { Link } from "react-router-dom";
-import { CartContext } from "../utils/CartContext";
 
 function Wishlist() {
   const { wishlist, removeFromWishlist } = useContext(WishlistContext);
-  const { addToCart } = useContext(CartContext);
 
   if (!wishlist?.length) {
     return (

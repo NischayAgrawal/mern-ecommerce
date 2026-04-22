@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 export const WishlistContext = createContext();
 
@@ -17,11 +18,15 @@ export function WishlistProvider({ children }) {
 
     if (!exists) {
       setWishlist([...wishlist, product]);
+      toast.success("Added to wishlist");
+    } else {
+      toast.info("Already in wishlist");
     }
   };
 
   const removeFromWishlist = (id) => {
     setWishlist((prev) => prev.filter((item) => item._id !== id));
+    toast.error("Removed from wishlist");
   };
 
   return (
