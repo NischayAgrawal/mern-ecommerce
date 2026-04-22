@@ -18,11 +18,9 @@ import Profile from "./pages/Profile";
 import Checkout from "./pages/Checkout";
 
 function AppInner() {
-  const location = useLocation();
-
   return (
     <>
-      {location.pathname !== "/" && <Navbar />}
+      <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products/:category" element={<ProductListing />} />

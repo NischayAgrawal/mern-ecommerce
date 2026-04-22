@@ -9,7 +9,6 @@ const ProductListing = () => {
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
 
-  // 🔥 NEW: category filter state (default from URL)
   const [selectedCategories, setSelectedCategories] = useState(
     category ? [category] : [],
   );
@@ -24,7 +23,6 @@ const ProductListing = () => {
   const { addToWishlist } = useContext(WishlistContext);
   const { addToCart } = useContext(CartContext);
 
-  // 🔥 IMPORTANT: fetch ALL products
   const { data, loading, error } = useFetch(
     "https://backend-products-ecru.vercel.app/products",
   );
@@ -45,28 +43,24 @@ const ProductListing = () => {
 
   let filteredProducts = [...data];
 
-  // 🔍 Search filter
   if (searchQuery) {
     filteredProducts = filteredProducts.filter((product) =>
       product.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }
 
-  // ⭐ Rating filter
   if (rating > 0) {
     filteredProducts = filteredProducts.filter(
       (product) => product.rating >= rating,
     );
   }
 
-  // 🏷️ Category filter (MULTI SELECT)
   if (selectedCategories.length > 0) {
     filteredProducts = filteredProducts.filter((product) =>
       selectedCategories.includes(product.category),
     );
   }
 
-  // 💰 Sorting
   if (sortOrder === "lowToHigh") {
     filteredProducts.sort((a, b) => a.price - b.price);
   }
@@ -75,7 +69,6 @@ const ProductListing = () => {
     filteredProducts.sort((a, b) => b.price - a.price);
   }
 
-  // ❌ No results
   if (filteredProducts.length === 0) {
     return (
       <div className="container my-5 text-center">
@@ -111,7 +104,11 @@ const ProductListing = () => {
                       src={product.imgURL}
                       className="card-img-top"
                       alt={product.name}
-                      style={{ height: "250px", objectFit: "cover" }}
+                      style={{
+                        width: "100%",
+                        height: "200px",
+                        objectFit: "contain",
+                      }}
                     />
                   </Link>
 
@@ -169,7 +166,6 @@ const ProductListing = () => {
               ))}
             </div>
 
-            {/* ⭐ Rating */}
             <div className="mt-3">
               <h6>Rating</h6>
               <input
@@ -184,7 +180,6 @@ const ProductListing = () => {
               <p>{rating} and above</p>
             </div>
 
-            {/* 💰 Sort */}
             <div className="mt-3">
               <h6>Sort by Price</h6>
 
@@ -207,7 +202,6 @@ const ProductListing = () => {
               </div>
             </div>
 
-            {/* 🧹 Clear */}
             <button
               className="btn btn-secondary w-100 mt-3"
               onClick={() => {

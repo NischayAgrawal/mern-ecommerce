@@ -1,14 +1,19 @@
 import { useState, useContext } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { CartContext } from "../utils/CartContext";
+import { WishlistContext } from "../utils/WishlistContext";
 
 export default function Navbar() {
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const { cart } = useContext(CartContext);
+  const { wishlist } = useContext(WishlistContext);
 
+  const wishlistCount = wishlist.length;
   const cartCount = cart.reduce((total, i) => total + i.quantity, 0);
+
+  const isProductPage = location.pathname.startsWith("/products");
 
   return (
     <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -40,7 +45,7 @@ export default function Navbar() {
               Kids
             </Link> */}
             <Link className="nav-link" to="/wishlist">
-              Wishlist
+              Wishlist ({wishlistCount})
             </Link>
             <Link className="nav-link" to="/cart">
               Cart ({cartCount})
@@ -50,25 +55,27 @@ export default function Navbar() {
           {/* RIGHT SIDE (SEARCH + PROFILE) */}
           <div className="d-flex align-items-center gap-3">
             {/* SEARCH */}
-            <form
-              className="d-flex"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const category = location.pathname.split("/")[2];
-                navigate(`/products/${category}?search=${searchText}`);
-              }}
-            >
-              <input
-                className="form-control me-2"
-                type="search"
-                placeholder="Search"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-              />
-              <button className="btn btn-outline-success" type="submit">
-                Search
-              </button>
-            </form>
+            {isProductPage && (
+              <form
+                className="d-flex"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const category = location.pathname.split("/")[2];
+                  navigate(`/products/${category}?search=${searchText}`);
+                }}
+              >
+                <input
+                  className="form-control me-2"
+                  type="search"
+                  placeholder="Search"
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                />
+                <button className="btn btn-outline-success" type="submit">
+                  Search
+                </button>
+              </form>
+            )}
 
             {/* PROFILE ICON */}
             <Link to="/profile" style={{ textDecoration: "none" }}>

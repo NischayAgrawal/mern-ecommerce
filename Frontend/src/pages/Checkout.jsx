@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 
 function Checkout() {
   const { cart, setCart } = useContext(CartContext);
-  const { selectedAddress } = useContext(AddressContext);
+  const { addresses, selectedAddress, setSelectedAddress } =
+    useContext(AddressContext);
   const { addOrder } = useContext(OrderContext);
   const navigate = useNavigate();
 
@@ -40,18 +41,36 @@ function Checkout() {
 
       {/* ADDRESS */}
       <div className="card p-3 mb-3">
-        <h5>Delivery Address</h5>
+        <h5>Select Delivery Address</h5>
 
-        {selectedAddress ? (
-          <>
-            <p>{selectedAddress.name}</p>
-            <p>
-              {selectedAddress.city}, {selectedAddress.pincode}
-            </p>
-            <p>Ph: {selectedAddress.phone}</p>
-          </>
+        {addresses.length === 0 ? (
+          <p className="text-danger">
+            No address found. Please add one in profile.
+          </p>
         ) : (
-          <p className="text-danger">No address selected</p>
+          addresses.map((addr) => (
+            <div
+              key={addr.id}
+              className={`border p-2 mb-2 ${
+                selectedAddress?.id === addr.id ? "border-success" : ""
+              }`}
+            >
+              <p className="mb-1">
+                <strong>{addr.name}</strong>
+              </p>
+              <p className="mb-1">
+                {addr.city}, {addr.pincode}
+              </p>
+              <p className="mb-1">Ph: {addr.phone}</p>
+
+              <button
+                className="btn btn-sm btn-outline-primary"
+                onClick={() => setSelectedAddress(addr)}
+              >
+                {selectedAddress?.id === addr.id ? "Selected" : "Select"}
+              </button>
+            </div>
+          ))
         )}
       </div>
 

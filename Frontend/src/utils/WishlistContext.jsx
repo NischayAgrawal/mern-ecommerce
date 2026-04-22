@@ -1,24 +1,27 @@
-import { createContext, useState } from "react";
-import { toast } from "react-toastify";
+import { createContext, useState, useEffect } from "react";
 
 export const WishlistContext = createContext();
 
 export function WishlistProvider({ children }) {
-  const [wishlist, setWishlist] = useState([]);
+  const [wishlist, setWishlist] = useState(() => {
+    const stored = localStorage.getItem("wishlist");
+    return stored ? JSON.parse(stored) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem("wishlist", JSON.stringify(wishlist));
+  }, [wishlist]);
 
   const addToWishlist = (product) => {
     const exists = wishlist.find((item) => item._id === product._id);
-    if (exists) {
-      toast.info("Item already in wishlist");
-      return;
+
+    if (!exists) {
+      setWishlist([...wishlist, product]);
     }
-    setWishlist((prev) => [...prev, product]);
-    toast.success("Item added to wishlist");
   };
 
-  const removeFromWishlist = (productId) => {
-    setWishlist((prev) => prev.filter((item) => item._id !== productId));
-    toast.error("Item removed from wishlist");
+  const removeFromWishlist = (id) => {
+    setWishlist((prev) => prev.filter((item) => item._id !== id));
   };
 
   return (

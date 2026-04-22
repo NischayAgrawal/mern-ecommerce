@@ -3,6 +3,8 @@ import { AddressContext } from "../utils/AddressContext";
 import { OrderContext } from "../utils/OrderContext";
 
 function Profile() {
+  const { orders } = useContext(OrderContext);
+
   const {
     addresses,
     addAddress,
@@ -12,8 +14,6 @@ function Profile() {
     setSelectedAddress,
   } = useContext(AddressContext);
 
-  const { orders } = useContext(OrderContext);
-
   const [form, setForm] = useState({
     name: "",
     city: "",
@@ -21,10 +21,38 @@ function Profile() {
     phone: "",
   });
 
+  const [errors, setErrors] = useState({});
   const [editingId, setEditingId] = useState(null);
+
+  // 🔍 VALIDATION
+  const validate = () => {
+    let newErrors = {};
+
+    if (!/^[A-Za-z\s]{3,}$/.test(form.name.trim())) {
+      newErrors.name = "Name must contain only letters (min 3 characters)";
+    }
+
+    if (!/^[A-Za-z\s.,-]{2,}$/.test(form.city.trim())) {
+      newErrors.city =
+        "City can contain letters, spaces, '.', '-' and ',' only (min 2 characters)";
+    }
+
+    if (!/^\d{6}$/.test(form.pincode)) {
+      newErrors.pincode = "Pincode must be 6 digits";
+    }
+
+    if (!/^\d{10}$/.test(form.phone)) {
+      newErrors.phone = "Phone must be 10 digits";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    if (!validate()) return;
 
     if (editingId) {
       updateAddress(editingId, form);
@@ -34,6 +62,7 @@ function Profile() {
     }
 
     setForm({ name: "", city: "", pincode: "", phone: "" });
+    setErrors({});
   };
 
   return (
@@ -60,33 +89,42 @@ function Profile() {
         <form onSubmit={handleSubmit} className="mb-3">
           <input
             placeholder="Name"
-            className="form-control mb-2"
+            className="form-control mb-1"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
+          {errors.name && <p className="text-danger">{errors.name}</p>}
 
           <input
             placeholder="City"
-            className="form-control mb-2"
+            className="form-control mb-1"
             value={form.city}
-            onChange={(e) => setForm({ ...form, city: e.target.value })}
+            onChange={(e) => {
+              const value = e.target.value;
+
+              if (/^[A-Za-z\s.,-]*$/.test(value)) {
+                setForm({ ...form, city: value });
+              }
+            }}
           />
 
           <input
             placeholder="Pincode"
-            className="form-control mb-2"
+            className="form-control mb-1"
             value={form.pincode}
             onChange={(e) => setForm({ ...form, pincode: e.target.value })}
           />
+          {errors.pincode && <p className="text-danger">{errors.pincode}</p>}
 
           <input
             placeholder="Phone"
-            className="form-control mb-2"
+            className="form-control mb-1"
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
+          {errors.phone && <p className="text-danger">{errors.phone}</p>}
 
-          <button className="btn btn-primary">
+          <button className="btn btn-primary mt-2">
             {editingId ? "Update Address" : "Add Address"}
           </button>
         </form>
@@ -145,7 +183,17 @@ function Profile() {
         ) : (
           orders.map((order) => (
             <div key={order.id} className="border p-3 mb-3">
-              <h6>Order ID: {order.id}</h6>
+              <div className="d-flex justify-content-between">
+                <h6>Order ID: {order.id}</h6>
+
+                {/* <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => deleteOrder(order.id)}
+                >
+                  Delete
+                </button> */}
+              </div>
+
               <p>
                 <strong>Date:</strong> {order.date}
               </p>
