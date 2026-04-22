@@ -17,7 +17,8 @@ function Home() {
     },
     {
       name: "Kids",
-      image: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519",
+      image:
+        "https://images.unsplash.com/photo-1742390671657-c8738e123962?q=80&w=1025&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       path: "kids",
     },
   ];
